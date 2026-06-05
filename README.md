@@ -126,3 +126,76 @@ openpyxl
 - Ensure ChromeDriver is installed
 - Selenium runs in headless mode
 - MongoDB must be running before execution
+
+
+
+
+## 🌐 Platform Coverage
+
+### Implemented: YouTube (Fully Functional)
+
+The current system fully supports:
+- YouTube video search crawling
+- Creator extraction
+- Video metadata extraction
+- Product-level validation
+- Structured dataset generation
+
+YouTube was chosen due to:
+- Stable DOM structure for scraping
+- High availability of review content
+- Rich metadata (views, date, channel info)
+
+---
+
+## 🚀 Extension to Other Platforms
+
+The architecture is designed to be **platform-agnostic**, where each platform implements a common interface:
+
+
+
+---
+
+### 📸 Instagram Extension (Planned)
+
+Instagram integration would require:
+- Hashtag-based search (#productname, #review)
+- Creator reel/post extraction
+- GraphQL or scraping-based data access
+- Authentication handling (optional via cookies/session)
+
+Key challenges:
+- Heavy anti-scraping protection
+- Login requirement for full data access
+
+---
+
+### 🎵 TikTok Extension (Planned)
+
+TikTok integration would include:
+- Keyword-based video search
+- Creator video feed extraction
+- Caption-based product matching
+
+Key challenges:
+- Dynamic rendering (JS-heavy)
+- Rate limiting and bot detection
+- API restrictions
+
+---
+
+## 🧱 Scalable Architecture Design
+
+To support multiple platforms, the system can be refactored into:
+
+```
+
+Platform Interface Layer
+↓
+Platform Adapters (YouTube / Instagram / TikTok)
+↓
+Unified Data Schema Layer
+↓
+Validation & Scoring Engine
+↓
+Storage Layer (MongoDB / Data Lake)
