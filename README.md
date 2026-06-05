@@ -112,14 +112,6 @@ Outputs:
 
 ---
 
-## Mongo Status Flow
-
-- 1 → Pending
-- 2 → Processing
-- 3 → Completed
-
----
-
 ## Requirements
 
 pandas  
