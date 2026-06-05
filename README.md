@@ -66,6 +66,8 @@ The pipeline operates as a decoupled, multi-stage extraction, validation, and st
 
 ## Project Structure
 
+```bash
+
 project/
 ├── main_crawling.py         # Selenium Core Engine
 ├── product_matcher.py       # Exact-Product Rules Evaluation Engine
@@ -77,7 +79,7 @@ project/
 │   └── creator_reviews_filtered_data.xlsx
 ├── requirements.txt         # Pinned python components
 └── README.md                # System documentation
-
+```
 ---
 
 ## Setup
