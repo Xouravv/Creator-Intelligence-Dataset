@@ -1,0 +1,106 @@
+======================================================================
+CREATOR INTELLIGENCE PIPELINE: SYSTEM CHALLENGES & ARCHITECTURE LOG
+======================================================================
+
+1. TECHNICAL OVERVIEW
+----------------------------------------------------------------------
+The engineering objective of this application is to pull data from
+public social streams, filter video metadata against exact product 
+matches, and dump results out into clean raw and filtered streams. 
+
+Pipeline Components:
+- main_crawling.py (Headless Selenium Core Scraper)
+- product_matcher.py (Intent & Phrase Rules Engine)
+- MongoDB Docker Layer (Data input queue handling)
+
+======================================================================
+2. PRODUCTION CHALLENGES FACED & STRUCTURAL RESOLUTIONS
+======================================================================
+
+CHALLENGE 1: DYNAMIC LAYOUT LOADING (ASYNC DOM BUFFERING)
+- Issue: YouTube search layout elements render dynamically using an
+  infinite scroll architecture. Executing element search queries immediately
+  after page-load throws immediate failures or fetches zero records.
+- Resolution: Engineered manual layout shifts inside the scraper using 
+  the command `window.scrollTo(0, document.documentElement.scrollHeight)`. 
+  This is matched with a strict layout buffer time (`time.sleep(2)`) to 
+  allow layout grids to compile before reading elements.
+
+CHALLENGE 2: METADATA EXTRACTION MISMATCHES (EMPTY NODES)
+- Issue: Different video cards display distinct elements. If a creator 
+  hides their profile details or if specific video metrics fail to load, 
+  the parsing engine breaks mid-run.
+- Resolution: Wrapped inner loops in nested try-except blocks. If parsing
+  encounters an unexpected configuration, it assigns safe fallback values 
+  (e.g., empty strings "") to keep the loop processing subsequent video 
+  items smoothly.
+
+CHALLENGE 3: AUTOMATION AND BOT-DETECTION FIREWALLS
+- Issue: Standard headless browser instances reveal underlying driver flags, 
+  causing target pages to drop active connections or request captchas.
+- Resolution: Injected precise arguments into the Chrome driver options pool:
+  * '--headless=new' (Enforces modern headless sandbox)
+  * '--disable-blink-features=AutomationControlled' (Strips automation flags)
+  * '--no-sandbox' & '--disable-dev-shm-usage' (Fixes Linux memory bounds)
+
+======================================================================
+3. DATA ARCHITECTURE AND SCHEMA LOG
+======================================================================
+
+The pipeline outputs two specific structural Excel document targets inside the
+"extracted_data/" file directory:
+
+TARGET A: raw_data.xlsx
+- Holds every data record discovered where title text passes basic string checks.
+- Structured dynamically using individual sheets named after the target product.
+
+TARGET B: filtered_data.xlsx
+- Holds records that successfully passed the secondary validation script layers.
+- Appends structural metadata criteria to confirm target content metrics.
+
+RECORD DATA MAP MATRIX (12-FIELD METRIC PATH):
+----------------------------------------------------------------------
+Field Name                | Type    | Extraction Mapping Target
+----------------------------------------------------------------------
+1. Creator Name           | String  | CSS Path: #channel-info // a
+2. Creator Profile URL    | String  | Attribute: href
+3. Platform               | String  | Fixed Static Literal ("YouTube")
+4. Video Title            | String  | Attribute: title (a#video-title)
+5. Video URL              | String  | Attribute: href (a#video-title)
+6. Publish Date           | String  | Index Array Span [1] (#metadata-line)
+7. View Count             | String  | Index Array Span [0] (#metadata-line)
+8. Product Mentioned      | String  | Input Collection DB Metadata Buffer
+9. Brand Mentioned        | String  | Input Collection DB Metadata Buffer
+10. Evidence Snippet      | String  | Video Title Array Mirror
+11. Confidence Score      | Float   | Evaluated via product_matcher Lambda Pass
+12. Validation Logic      | String  | Evaluated via product_matcher Lambda Pass
+
+======================================================================
+4. SCALABILITY APPROACH (MULTI-PLATFORM UPGRADES)
+======================================================================
+
+To move from sequential tasks to a production engine tracking hundreds 
+of items across YouTube, Instagram, and TikTok, the script can adapt to 
+the following models:
+
+1. Distributed Task Engine Topology (Celery + Redis)
+   - Converts the flat product loop into distributed jobs, allowing multiple 
+     Docker processing nodes to scale out horizontally.
+2. Enterprise Proxy Delivery Arrays
+   - Routes browser traffic through rotating residential network bridges 
+     (e.g., Bright Data) to bypass strict platform firewalls.
+3. Stealth Browser Modernization (Playwright Integration)
+   - Upgrades the backend from Selenium to Playwright Stealth to mask driver 
+     fingerprints and ensure smooth data collection across target feeds.
+
+======================================================================
+5. ERROR HANDLING MATRIX
+======================================================================
+- Driver Initial Load Failures: Caught safely via `WebDriverException`, logging 
+  errors without stalling the queue pipeline.
+- Mid-Run Layout Failures: Breaks out of scroll dependencies dynamically, saving 
+  already-collected memory loops safely.
+- Safe Buffer Preservation: Commands `writer.close()` and `driver.quit()` are placed 
+  at the structural base of the script, guaranteeing that captured records are safely 
+  flushed to disk even if trailing operations fail.
+======================================================================

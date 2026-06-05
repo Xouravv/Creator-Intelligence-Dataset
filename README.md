@@ -26,6 +26,57 @@ project/
 ├── requirements.txt
 └── README.md
 ```
+---
+
+## 🛠️ System Architecture Diagram
+
+The pipeline operates as a decoupled, multi-stage extraction, validation, and storage system. The data lifecycle flows as follows:
+
+```text
+       +--------------------------------------------+
+       |             MongoDB Queue                  |
+       |       (db/config.py & create_product.py)   |
+       +---------------------+----------------------+
+                             |
+                             | 1. Pulls Target Keywords
+                             v
+       +--------------------------------------------+
+       |             main_crawling.py               |
+       |     (Headless Selenium WebDriver Engine)   |
+       +---------------------+----------------------+
+                             |
+                             | 2. Crawls Public DOM & Content Arrays
+                             v
+       +--------------------------------------------+
+       |            product_matcher.py              |
+       |   (RegEx-driven Verification & Scoring)    |
+       +---------------------+----------------------+
+                             |
+               +-------------+-------------+
+               | 3a. Save Raw              | 3b. Save Filtered
+               v                           v
++------------------------------+ +------------------------------+
+|        extracted_data/       | |        extracted_data/       |
+| creator_reviews_raw_data.xlsx| |creator_reviews_filtered_data.|
++------------------------------+ +------------------------------+
+
+```
+
+---
+
+## Project Structure
+
+project/
+├── main_crawling.py         # Selenium Core Engine
+├── product_matcher.py       # Exact-Product Rules Evaluation Engine
+├── db/                      # Database Configuration scripts
+│   ├── config.py            # Local MongoDB Cluster configuration
+│   └── create_product.py    # Target items list initializer
+├── extracted_data/          # Generated local output storage paths
+│   ├── creator_reviews_raw_data.xlsx
+│   └── creator_reviews_filtered_data.xlsx
+├── requirements.txt         # Pinned python components
+└── README.md                # System documentation
 
 ---
 
@@ -33,7 +84,7 @@ project/
 
 ### Clone Repo
 ```bash
-git clone https://github.com/Xouravv/Creator-Intelligence-Dataset.git>
+git clone >
 cd project
 ```
 
