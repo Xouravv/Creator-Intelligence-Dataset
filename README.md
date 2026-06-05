@@ -11,7 +11,6 @@ A scalable data pipeline that crawls YouTube review videos for products, validat
 - Product-level review validation logic  
 - Confidence scoring for match quality  
 - Raw and filtered dataset generation  
-- Resume-safe processing using status tracking  
 - Duplicate handling at video URL level  
 
 ---
@@ -60,6 +59,17 @@ docker run -d \
   -v mongodb_data:/data/db \
   mongo:latest
 ```
+
+```bash
+run db/config.py    ------------> create db
+run db/create_product.py  ------> add demo products
+run fetch_products.py ----------> to check if product added sucessfully
+
+```
+
+
+
+
 
 Connection:
 ```
