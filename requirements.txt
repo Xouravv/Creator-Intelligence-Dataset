@@ -1,0 +1,17 @@
+requests
+beautifulsoup4
+lxml
+selenium
+webdriver-manager
+pandas
+numpy
+python-dotenv
+tqdm
+aiohttp
+asyncio
+fake-useragent
+pymongo
+python-dotenv
+xlsxwriter
+openpyxl
+pandas
